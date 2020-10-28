@@ -1,7 +1,7 @@
 import requests
-import pprint
 import json
 import string
+import pymorphy2
 
 URL = 'https://api.hh.ru/vacancies'
 params = {
@@ -35,16 +35,34 @@ for i in range(1, pages):
         text += str(responsibility)
         text += str(requirement)
 
-#почистим и получим dict, в котором ключ - слово, значение - количество появлений в тексте. В конце выведем топ-10
+#почистим и получим dict, в котором ключ - слово, значение - количество появлений в тексте.
 for i in string.punctuation:
     text = text.replace(i, ' ')
+
 text = text.lower()
 text = text.split()
-skills = ['python', 'django',  'flask', 'pandas', 'api', 'sql', 'nodejs', 'php', 'git','numpy']
+
+skills = ['python', 'sql', 'git', 'linux', 'javascript', 'django', 'hive', 'sas', 'scrum',
+          'aosp', 'unix', 'ruby', 'php', 'nodejs', 'matlab', 'frontend', 'backend', 'web',
+          'office', 'qt', 'pyqt', 'java', 'c+', 'c#', 'experience', 'r', 'pandas', 'numpy']
+
 dict = {}
 for i in text:
     dict[i] = text.count(i)
+
 list = list(dict.items())
+
+def sort_count(inputStr):
+    return inputStr[1]
+
+list = sorted(list, key=sort_count, reverse=True)
+n = 1
+print('Топ 10 навыков профессии и как часто встречаются (в процентах):')
+
 for i in range(len(list)):
     if list[i][0] in skills:
-       print(f'навыки встречаются:{list[i]} - в {round(list[i][1] * 100 / found_vacanc)} % вакансий')
+       print(f'{n}) {list[i][0].capitalize()}: встречается в {round(list[i][1]*100/found_vacanc, 2)} % вакансий')
+       n += 1
+    if n == 11:
+        break
+
